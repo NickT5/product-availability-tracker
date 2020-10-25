@@ -48,16 +48,16 @@ def main():
     notified_max_counter: int = 0  # how many times a recipient will receive a notification when a product is available
     path = "C:/Users/nick/Documents/projects/product-availability-tracker/inventory.json"
     try:
-        with open(path) as inventory_file:
+        with open(path, 'r') as inventory_file:
             inventory = json.load(inventory_file)
             products = inventory["products"]
             notified_max_counter = inventory["notified_max_counter"]
     except FileNotFoundError:
-        print(f"File not found: {path}")
+        print(f"File not found: {path}. Failed to read products from inventory!")
         return
 
     # check if products are in stock/available
-    for product in products:
+    for i, product in enumerate(products):
         driver.get(product["link"])
 
         # click on the accept cookies button
@@ -68,21 +68,33 @@ def main():
         if is_clicked:
             print(f"Product {product['name']} is available.")
             product["available"] = 1
+            inventory["products"][i]["notified_counter"] += 1  # update inventory value
         else:
             print(f"Product {product['name']} is not available.")
             product["available"] = 0
 
+    # update (counters from) products in inventory
+    try:
+        with open(path, 'w') as inventory_file:
+            json.dump(inventory, inventory_file, indent=4)
+    except FileNotFoundError:
+        print(f"File not found: {path}. Failed to update inventory!")
+        return
+
     # send notification (email, sms, ... ? ) with the available products to the recipients
     # build email
     email_content = [f"- {p['name']}: {p['link']}\n" for p in products if p["available"] == 1 and p["notified_counter"] < notified_max_counter]
-    email_intro = f"Hi,\nThese products are available:" if len(email_content) > 1 else "Hi,\nThis product is available:"
-    email_body = "%s \n %s \n\nGr,\nNick" % (email_intro, "".join(email_content))
-    email_subject = "Products are available!" if len(email_content) > 1 else "Product is available!"
+    if len(email_content) <= 0:
+        print("Not sending an email because there are no available products or the notified counter has been exceeded.")
+    else:
+        email_intro = f"Hi,\nThese products are available:" if len(email_content) > 1 else "Hi,\nThis product is available:"
+        email_body = "%s \n %s \n\nGr,\nNick" % (email_intro, "".join(email_content))
+        email_subject = "Products are available!" if len(email_content) > 1 else "Product is available!"
 
-    # send email to recipients
-    notifier = Notify()
-    for recipient in Recipients.get_recipients():
-        notifier.send_email(recipient=recipient, email_subject=email_subject, email_body=email_body)
+        # send email to recipients
+        notifier = Notify()
+        for recipient in Recipients.get_recipients():
+            notifier.send_email(recipient=recipient, email_subject=email_subject, email_body=email_body)
 
     # close chrome browser
     if driver:
