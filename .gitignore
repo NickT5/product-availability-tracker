@@ -1,0 +1,7 @@
+# Pycharm IDE
+.idea
+__pycache__
+
+# Files that don't need to be in the remote repo.
+recipients.py
+venv
