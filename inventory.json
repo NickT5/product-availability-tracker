@@ -1,19 +1,12 @@
 {
-  "products": [
-    {
-      "name": "Playstation 5",
-      "vendor": "Coolblue",
-      "link": "https://www.coolblue.be/nl/product/865866/playstation-5.html",
-      "available": -1,
-      "notified_counter": 0
-    },
-    {
-      "name": "Playstation 4",
-      "vendor": "Coolblue",
-      "link": "https://www.coolblue.be/nl/product/737956/sony-playstation-4-slim-500-gb.html",
-      "available": -1,
-      "notified_counter": 0
-    }
-  ],
-  "notified_max_counter": 3
+    "products": [
+        {
+            "name": "Playstation 5",
+            "vendor": "Coolblue",
+            "link": "https://www.coolblue.be/nl/product/865866/playstation-5.html",
+            "available": 0,
+            "notified_counter": 0
+        }
+    ],
+    "notified_max_counter": 3
 }

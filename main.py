@@ -1,11 +1,10 @@
+import json
 from time import sleep
 from selenium import webdriver
 from selenium.common.exceptions import NoSuchElementException
 
 from notify import Notify
 from recipients import Recipients
-
-import json
 
 
 def click_button(driver: webdriver.Chrome, query: str, find_by: str = "xpath", max_retries: int = 1) -> bool:
